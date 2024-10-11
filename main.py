@@ -74,39 +74,25 @@ with mp_hands.Hands(
 
             # Perform key press based on raised finger count
             if fingerCount == 1:
-                #keyboard.press(Key.alt)
                 keyboard.press(Key.right)
                 time.sleep(0.1)
                 keyboard.release(Key.right)
-                #keyboard.release(Key.alt)
-                action_text = "Right Rotation"
+                action_text = "Move Right"
             elif fingerCount == 2:
-                #keyboard.press(Key.alt)
                 keyboard.press(Key.left)
                 time.sleep(0.1)
                 keyboard.release(Key.left)
-                #keyboard.release(Key.alt)
-                action_text = "Left Rotation"
-            elif fingerCount == 3:
-                #keyboard.press(Key.alt)
+                action_text = "Move Left"
+            elif fingerCount == 4:
                 keyboard.press(Key.up)
                 time.sleep(0.1)
                 keyboard.release(Key.up)
-                #keyboard.release(Key.alt)
-                action_text = "Up Rotation"
-            elif fingerCount == 4:
-                #keyboard.press(Key.alt)
+                action_text = "Move Forward"
+            elif fingerCount == 5:
                 keyboard.press(Key.down)
                 time.sleep(0.1)
                 keyboard.release(Key.down)
-                #keyboard.release(Key.alt)
-                action_text = "Down Rotation"
-            elif fingerCount == 5:
-                pyautogui.hscroll(+10)
-                action_text = "Zoom In"
-            elif fingerCount == 6:
-                pyautogui.hscroll(-10)
-                action_text = "Zoom out"
+                action_text = "Move Backward"
             else:
                 action_text = "No Action"
 
