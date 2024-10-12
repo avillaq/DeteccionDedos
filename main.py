@@ -74,25 +74,25 @@ with mp_hands.Hands(
 
             # Perform key press based on raised finger count
             if fingerCount == 1:
-                keyboard.press(Key.right)
-                time.sleep(0.1)
-                keyboard.release(Key.right)
-                action_text = "Move Right"
-            elif fingerCount == 2:
                 keyboard.press(Key.left)
                 time.sleep(0.1)
                 keyboard.release(Key.left)
                 action_text = "Move Left"
+            elif fingerCount == 2:
+                keyboard.press(Key.right)
+                time.sleep(0.1)
+                keyboard.release(Key.right)
+                action_text = "Move Right"
             elif fingerCount == 4:
                 keyboard.press(Key.up)
                 time.sleep(0.1)
                 keyboard.release(Key.up)
-                action_text = "Move Forward"
+                action_text = "Move Up"
             elif fingerCount == 5:
                 keyboard.press(Key.down)
                 time.sleep(0.1)
                 keyboard.release(Key.down)
-                action_text = "Move Backward"
+                action_text = "Move Down"
             else:
                 action_text = "No Action"
 
