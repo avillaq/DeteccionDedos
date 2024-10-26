@@ -3,20 +3,25 @@ import mediapipe as mp
 from pynput.keyboard import Controller as KeyboardController, Key
 import time
 
-# Initialize Mediapipe hands module
+# Inicializar el módulo de manos de Mediapipe
 mp_drawing = mp.solutions.drawing_utils
 mp_hands = mp.solutions.hands
 
-# For webcam input:
-cap = cv2.VideoCapture(0)
-# cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)  # Usa DirectShow como backend en lugar de MSMF
+# Entrada de la cámara web
+cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 
 keyboard = KeyboardController()
 
 # Variables para el seguimiento de la posición del volante
-steering_sensitivity = 0.5  # Sensibilidad del giro
-center_position = 0  # Centro del volante
-previous_angle = 0  # Último ángulo calculado
+steering_sensitivity = 0.5
+previous_angle = 0
+angle_threshold = 0.05
+
+# Variables para controlar la presión de las teclas
+is_pressed = False
+press_start_time = 0
+last_action = None
+press_duration = 0
 
 with mp_hands.Hands(
     model_complexity=0,
@@ -24,53 +29,39 @@ with mp_hands.Hands(
     min_tracking_confidence=0.5) as hands:
     
     while cap.isOpened():
-        # Read a frame from the camera
         success, image = cap.read()
         if not success:
-            print("Unable to capture a frame from the camera.")
+            print("No se pudo capturar un fotograma de la cámara.")
             continue
 
-        # Flip the image horizontally
+        # Voltear la imagen horizontalmente
         image = cv2.flip(image, 1)
+        height, width, _ = image.shape
 
-        # Convert image to RGB
+        # Convertir la imagen a RGB
         image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-
-        # Process the image with Mediapipe hands
         results = hands.process(image_rgb)
 
-        # Convert image back to BGR
+        # Convertir la imagen de nuevo a BGR
         image = cv2.cvtColor(image_rgb, cv2.COLOR_RGB2BGR)
 
+        action_text = "Centrado"
+        hand_positions = {}
+
         if results.multi_hand_landmarks:
-            # Si hay al menos una mano detectada, obtenemos las posiciones de los puntos
             for hand_landmarks in results.multi_hand_landmarks:
-                handLandmarks = [[landmark.x, landmark.y] for landmark in hand_landmarks.landmark]
+                # Posición del punto central en cada mano (índice 9)
+                hand_x, hand_y = hand_landmarks.landmark[9].x, hand_landmarks.landmark[9].y
+                hand_pixel = (int(hand_x * width), int(hand_y * height))
 
-                # Posición de las dos manos en el eje X
-                hand_x_position = handLandmarks[9][0]  # Usamos el punto 9 como referencia del centro de la mano
+                # Identificar si la mano es izquierda o derecha
+                handedness = "Derecha" if hand_landmarks.landmark[0].x < 0.5 else "Izquierda"
+                hand_positions[handedness] = (hand_x, hand_y)
 
-                # Calculamos el ángulo del "volante" basado en la posición relativa al centro de la pantalla
-                # (hand_x_position es un valor entre 0 y 1)
-                current_angle = (hand_x_position - 0.5) * 2 * steering_sensitivity
+                # Dibujar un punto en el centro de cada mano
+                cv2.circle(image, hand_pixel, 10, (255, 0, 0), -1)  # Punto azul para cada mano
 
-                # Comparamos el ángulo actual con el anterior para mover el volante
-                if current_angle < previous_angle - 0.1:  # Si el ángulo es menor, movemos a la izquierda
-                    keyboard.press(Key.right)
-                    time.sleep(0.1)
-                    keyboard.release(Key.right)
-                    action_text = "Move right"
-                elif current_angle > previous_angle + 0.1:  # Si el ángulo es mayor, movemos a la derecha
-                    keyboard.press(Key.left)
-                    time.sleep(0.1)
-                    keyboard.release(Key.left)
-                    action_text = "Move left"
-                else:
-                    action_text = "Centered"
-
-                previous_angle = current_angle
-
-                # Dibujamos los puntos clave en la mano
+                # Dibujar la mano con conexiones
                 mp_drawing.draw_landmarks(
                     image,
                     hand_landmarks,
@@ -78,18 +69,70 @@ with mp_hands.Hands(
                     landmark_drawing_spec=mp_drawing.DrawingSpec(color=(0, 0, 255), thickness=2, circle_radius=2),
                     connection_drawing_spec=mp_drawing.DrawingSpec(color=(255, 255, 255), thickness=2))
 
-            # Mostramos el ángulo calculado y la acción
-            height, width, _ = image.shape
+            # Si ambas manos están detectadas, comparar sus posiciones en el eje Y
+            if "Derecha" in hand_positions and "Izquierda" in hand_positions:
+                right_y = hand_positions["Derecha"][1]
+                left_y = hand_positions["Izquierda"][1]
+
+                # Control del movimiento basado en la posición Y
+                if right_y < left_y:  # Mano derecha más arriba que la izquierda
+                    if is_pressed and last_action != "Derecha":
+                        # Liberar tecla izquierda antes de presionar derecha
+                        keyboard.release(Key.left)
+                        is_pressed = False
+                    if not is_pressed:
+                        keyboard.press(Key.right)
+                        press_start_time = time.time()
+                        is_pressed = True
+                        last_action = "Derecha"
+                    action_text = "Mover a la derecha (Mano izquierda más alta)"
+                    
+                elif left_y < right_y:  # Mano izquierda más arriba que la derecha
+                    if is_pressed and last_action != "Izquierda":
+                        # Liberar tecla derecha antes de presionar izquierda
+                        keyboard.release(Key.right)
+                        is_pressed = False
+                    if not is_pressed:
+                        keyboard.press(Key.left)
+                        press_start_time = time.time()
+                        is_pressed = True
+                        last_action = "Izquierda"
+                    action_text = "Mover a la izquierda (Mano derecha más alta)"
+                    
+                else:  # Ninguna mano está arriba
+                    if is_pressed:
+                        # Liberar tecla si ambas manos están centradas
+                        keyboard.release(Key.left if last_action == "Izquierda" else Key.right)
+                        press_duration = time.time() - press_start_time
+                        is_pressed = False
+
+                # Mostrar el tiempo de presión
+                if last_action:  # Solo mostrar si hubo una acción
+                    cv2.putText(image, f"Tiempo {last_action}: {press_duration:.2f}s", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+
+                # Centro entre ambas manos
+                center_x = (hand_positions["Derecha"][0] + hand_positions["Izquierda"][0]) / 2
+                center_y = (hand_positions["Derecha"][1] + hand_positions["Izquierda"][1]) / 2
+                center_pixel = (int(center_x * width), int(center_y * height))
+
+                # Dibujar el punto central entre ambas manos
+                cv2.circle(image, center_pixel, 10, (0, 255, 0), -1)  # Punto verde para el centro
+
+            # Mostrar el texto de acción
             action_position = ((width - cv2.getTextSize(action_text, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2)[0][0]) // 2, 140)
             cv2.putText(image, action_text, action_position, cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
 
-        # Display the image
-        cv2.imshow("Virtual Steering Wheel", image)
+        else:
+            # Si no se detectan manos, resetea el estado
+            if is_pressed:
+                keyboard.release(Key.left) if last_action == "Izquierda" else keyboard.release(Key.right)
+                is_pressed = False
 
-        # Break the loop if 'Esc' key is pressed
-        if cv2.waitKey(5) & 0xFF == 27:
+        # Mostrar imagen
+        cv2.imshow("Volante Virtual", image)
+
+        if cv2.waitKey(10) & 0xFF == 27:  # Presionar 'ESC' para salir
             break
 
-# Release the camera and close all windows
 cap.release()
 cv2.destroyAllWindows()
