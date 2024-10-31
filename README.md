@@ -26,6 +26,7 @@ The project uses a publicly available dataset from the GitHub repository KNN Alp
 Here's a demo of the real-time hand gesture recognition system in action:
 
 ![Sign Language Alphabet Charts](Extra/giro.png)
+![Sign Language Alphabet Charts](Extra/manejo.png)
 
 ## Implementation Details
 The implementation of the real-time hand gesture recognition system for 3D object manipulation involves the following key steps:
