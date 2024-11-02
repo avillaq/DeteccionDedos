@@ -37,7 +37,7 @@ def run_virtual_steering(up_method, down_method, stop_event):
 
         # Variables para el control de movimiento basado en distancia de la cara
         last_distance = None
-        distance_threshold = 0.1
+        distance_threshold = 5
 
         with mp_hands.Hands(
             model_complexity=0,
@@ -94,8 +94,9 @@ def run_virtual_steering(up_method, down_method, stop_event):
                         left_y = hand_positions["Izquierda"][1]
 
                         # Control del movimiento basado en la posición Y
+                        tolerancia = 0.2
                         
-                        if right_y < left_y:  # Mano derecha más arriba que la izquierda
+                        if right_y < left_y - tolerancia:  # Mano derecha mas arriba que la izquierda
                             if is_pressed and last_action != "Derecha":
                                 # Liberar tecla izquierda antes de presionar derecha
                                 keyboard.release(Key.left)
@@ -105,9 +106,9 @@ def run_virtual_steering(up_method, down_method, stop_event):
                                 press_start_time = time.time()
                                 is_pressed = True
                                 last_action = "Derecha"
-                            action_text = "Mover a la derecha (Mano izquierda más alta)"
+                            action_text = "Mover a la derecha (Mano izquierda mas alta)"
                             
-                        elif left_y < right_y:  # Mano izquierda más arriba que la derecha
+                        elif left_y < right_y - tolerancia:  # Mano izquierda mas arriba que la derecha
                             if is_pressed and last_action != "Izquierda":
                                 # Liberar tecla derecha antes de presionar izquierda
                                 keyboard.release(Key.right)
@@ -117,7 +118,7 @@ def run_virtual_steering(up_method, down_method, stop_event):
                                 press_start_time = time.time()
                                 is_pressed = True
                                 last_action = "Izquierda"
-                            action_text = "Mover a la izquierda (Mano derecha más alta)"
+                            action_text = "Mover a la izquierda (Mano derecha mas alta)"
                             
                         else:  # Ninguna mano está arriba
                             if is_pressed:
