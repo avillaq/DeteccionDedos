@@ -127,7 +127,7 @@ def on_drag(event):
 # Configuración de la ventana principal
 root = tk.Tk()
 root.title("Ventana de Control")
-root.geometry("1200x800")
+root.geometry("900x600")
 
 apply_styles() 
 
