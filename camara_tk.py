@@ -20,10 +20,9 @@ is_pressed = False
 last_action = ""
 press_start_time = 0
 press_duration = 0
-distance_threshold = 0.2  # Ajusta el umbral de detección de distancia
 
 # Función para capturar y mostrar video de la cámara
-def video_stream(window, stop_event, up_method, down_method):
+def video_stream(window, stop_event, up_method, down_method, steering_sensitivity, distance_threshold):
     global camera_running, last_distance, is_pressed, last_action, press_start_time, press_duration
 
     cap = cv2.VideoCapture(0)
@@ -74,7 +73,9 @@ def video_stream(window, stop_event, up_method, down_method):
                     left_y = hand_positions["Izquierda"][1]
 
                     # Control del movimiento basado en la posición Y
-                    if right_y < left_y:  # Mano derecha más arriba que la izquierda
+                    tolerancia = steering_sensitivity
+
+                    if right_y < left_y - tolerancia:  # Mano derecha más arriba que la izquierda
                         if is_pressed and last_action != "Derecha":
                             # Liberar tecla izquierda antes de presionar derecha
                             keyboard.release(Key.left)
@@ -86,7 +87,7 @@ def video_stream(window, stop_event, up_method, down_method):
                             last_action = "Derecha"
                         action_text = "Mover a la derecha (Mano izquierda mas alta)"
                         
-                    elif left_y < right_y:  # Mano izquierda más arriba que la derecha
+                    elif left_y < right_y - tolerancia:  # Mano izquierda más arriba que la derecha
                         if is_pressed and last_action != "Izquierda":
                             # Liberar tecla derecha antes de presionar izquierda
                             keyboard.release(Key.right)
@@ -190,7 +191,7 @@ def video_stream(window, stop_event, up_method, down_method):
     camera_running = False
 
 # Función para iniciar el hilo de la cámara
-def run_virtual_tk(up_method, down_method, stop_event):
+def run_virtual_tk(up_method, down_method, stop_event, steering_sensitivity, distance_threshold):
     global camera_running
 
     if camera_running:
@@ -210,7 +211,7 @@ def run_virtual_tk(up_method, down_method, stop_event):
     sub_window.img_label = img_label
 
     # Iniciar la captura de video en un hilo
-    video_thread = threading.Thread(target=video_stream, args=(sub_window, stop_event, up_method, down_method))
+    video_thread = threading.Thread(target=video_stream, args=(sub_window, stop_event, up_method, down_method, steering_sensitivity, distance_threshold))
     video_thread.start()
 
     def on_closing():
@@ -227,8 +228,10 @@ if __name__ == "__main__":
     stop_event = threading.Event()
     up_method = "Cabeza"
     down_method = "Cabeza"
+    steering_sensitivity = 0.2
+    distance_threshold = 0.2
 
-    camera_thread = threading.Thread(target=run_virtual_tk, args=(up_method, down_method, stop_event))
+    camera_thread = threading.Thread(target=run_virtual_tk, args=(up_method, down_method, stop_event, steering_sensitivity, distance_threshold))
     camera_thread.start()
 
     time.sleep(10)

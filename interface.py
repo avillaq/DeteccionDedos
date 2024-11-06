@@ -96,9 +96,10 @@ def start_camera_tk_thread():
 
     try:
         up_method, down_method = get_control_methods()
+        steering_sensitivity, distance_threshold = get_sensitivity_and_distance()
         
         stop_event = threading.Event()
-        camera_thread_tk = threading.Thread(target=run_virtual_tk, args=(up_method, down_method, stop_event))
+        camera_thread_tk = threading.Thread(target=run_virtual_tk, args=(up_method, down_method, stop_event, steering_sensitivity, distance_threshold))
         camera_thread_tk.start()
         print("Hilo de cámara tk iniciado.")
     except Exception as e:
@@ -181,7 +182,7 @@ ttk.Label(settings_frame, text="Opciones de Configuración",
 # Ajuste de sensibilidad
 ttk.Label(settings_frame, text="Ajuste de Sensibilidad:", 
           style='TLabel').grid(row=1, column=0, columnspan=2, pady=5)
-sensitivity_value = tk.DoubleVar(value=0.1)  # Valor por defecto 0.1
+sensitivity_value = tk.DoubleVar(value=0.2)  # Valor por defecto 0.2
 sensitivity_scale = ttk.Scale(settings_frame, from_=0, to=1, orient="horizontal", style='TScale', command=update_sensitivity_label, variable=sensitivity_value)
 sensitivity_scale.grid(row=2, column=0, columnspan=2, pady=5)
 sensitivity_label = ttk.Label(settings_frame, text=f"Sensibilidad: {sensitivity_value.get():.2f}", style='TLabel')
@@ -190,7 +191,7 @@ sensitivity_label.grid(row=2, column=2, padx=5)
 # Umbral de distancia
 ttk.Label(settings_frame, text="Umbral de Distancia:", 
           style='TLabel').grid(row=3, column=0, columnspan=2, pady=5)
-distance_value = tk.DoubleVar(value=0.3)  # Valor por defecto 0.3
+distance_value = tk.DoubleVar(value=0.2)  # Valor por defecto 0.2
 distance_scale = ttk.Scale(settings_frame, from_=0.1, to=1, orient="horizontal", style='TScale', command=update_distance_label, variable=distance_value)
 distance_scale.grid(row=4, column=0, columnspan=2, pady=5)
 distance_label = ttk.Label(settings_frame, text=f"Distancia: {distance_value.get():.2f}", style='TLabel')
