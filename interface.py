@@ -7,6 +7,7 @@ from camara_openCV import run_virtual_steering
 from camara_tk import run_virtual_tk 
 from styles import apply_styles
 
+# -*- coding: utf-8 -*-
 # Rutas del juego Unity (configura según sea necesario)
 unity_exe_path = r"E:\personal\UNSA\2023-2\DSPJ\proyecto\ejec\gamV.exe"  # Para el juego local
 unity_web_url = "https://tu_juego_unity_en_webgl.com"  # Para el juego en WebGL
@@ -150,8 +151,35 @@ ttk.Label(unity_frame, text="Juego Unity", style='TLabel').grid(row=0, column=0,
 ttk.Button(unity_frame, text="Abrir Juego Unity", command=open_unity_game, style='TButton').grid(row=1, column=0, padx=5, pady=5)
 
 settings_frame = ttk.Frame(root, style='TFrame')
-ttk.Label(settings_frame, text="Opciones de Configuración", style='TLabel').grid(row=0, column=0, padx=5, pady=5)
+ttk.Label(settings_frame, text="Opciones de Configuración", style='TLabel').grid(row=0, column=0, columnspan=2, padx=5, pady=5)
 
+# Ajuste de sensibilidad
+ttk.Label(settings_frame, text="Ajuste de Sensibilidad:", style='TLabel').grid(row=1, column=0, columnspan=2, pady=5)
+sensitivity_scale = ttk.Scale(settings_frame, from_=0, to=1, orient="horizontal", style='TScale')
+sensitivity_scale.grid(row=2, column=0, columnspan=2, pady=5)
+
+# Umbral de distancia
+ttk.Label(settings_frame, text="Umbral de Distancia:", style='TLabel').grid(row=3, column=0, columnspan=2, pady=5)
+distance_scale = ttk.Scale(settings_frame, from_=0.1, to=1, orient="horizontal", style='TScale')
+distance_scale.grid(row=4, column=0, columnspan=2, pady=5)
+
+# Configuración de teclas direccionales
+ttk.Label(settings_frame, text="Teclas Direccionales:", style='TLabel').grid(row=5, column=0, columnspan=2, pady=5)
+
+# Control para flecha arriba
+ttk.Label(settings_frame, text="Arriba:", style='TLabel').grid(row=6, column=0, columnspan=2, pady=5)
+up_control_method = tk.StringVar(value="Cabeza")
+ttk.Radiobutton(settings_frame, text="Con la mano", variable=up_control_method, value="Mano", style='TRadiobutton').grid(row=7, column=0, pady=5)
+ttk.Radiobutton(settings_frame, text="Con la cabeza", variable=up_control_method, value="Cabeza", style='TRadiobutton').grid(row=7, column=1, pady=5)
+
+# Control para flecha abajo
+ttk.Label(settings_frame, text="Abajo:", style='TLabel').grid(row=9, column=0, columnspan=2, pady=5)
+down_control_method = tk.StringVar(value="Cabeza")
+ttk.Radiobutton(settings_frame, text="Con la mano", variable=down_control_method, value="Mano", style='TRadiobutton').grid(row=10, column=0, pady=5)
+ttk.Radiobutton(settings_frame, text="Con la cabeza", variable=down_control_method, value="Cabeza", style='TRadiobutton').grid(row=10, column=1, pady=5)
+
+# Botón de guardar configuraciones que también muestra los valores seleccionados
+ttk.Button(settings_frame, text="Guardar", command=lambda: messagebox.showinfo("Guardado", f"Configuraciones guardadas:\nArriba: {up_control_method.get()}\nAbajo: {down_control_method.get()}"), style='TButton').grid(row=12, column=0, columnspan=2, pady=10)
 
 def show_columns():
     clear_layout()
@@ -180,38 +208,9 @@ def clear_layout():
     unity_frame.grid_forget()
     settings_frame.grid_forget()
 
-# Ajuste de sensibilidad
-ttk.Label(settings_frame, text="Ajuste de Sensibilidad:", style='TLabel').grid(row=0, column=0, pady=5)
-sensitivity_scale = ttk.Scale(settings_frame, from_=0, to=1, orient="horizontal", style='TScale')
-sensitivity_scale.grid(row=1, column=0, pady=5)
-
-# Umbral de distancia
-ttk.Label(settings_frame, text="Umbral de Distancia:", style='TLabel').grid(row=2, column=0, pady=5)
-distance_scale = ttk.Scale(settings_frame, from_=0.1, to=1, orient="horizontal", style='TScale')
-distance_scale.grid(row=3, column=0, pady=5)
-
-# Configuración de teclas direccionales
-ttk.Label(settings_frame, text="Configuración de Teclas Direccionales:", style='TLabel').grid(row=4, column=0, pady=10)
-
-# Control para flecha arriba
-ttk.Label(settings_frame, text="Arriba:", style='TLabel').grid(row=5, column=0, pady=5)
-up_control_method = tk.StringVar(value="Cabeza")
-ttk.Radiobutton(settings_frame, text="Con la mano", variable=up_control_method, value="Mano", style='TRadiobutton').grid(row=6, column=0, sticky='w')
-ttk.Radiobutton(settings_frame, text="Con la cabeza", variable=up_control_method, value="Cabeza", style='TRadiobutton').grid(row=7, column=0, sticky='w')
-
-# Control para flecha abajo
-ttk.Label(settings_frame, text="Abajo:", style='TLabel').grid(row=8, column=0, pady=5)
-down_control_method = tk.StringVar(value="Cabeza")
-ttk.Radiobutton(settings_frame, text="Con la mano", variable=down_control_method, value="Mano", style='TRadiobutton').grid(row=9, column=0, sticky='w')
-ttk.Radiobutton(settings_frame, text="Con la cabeza", variable=down_control_method, value="Cabeza", style='TRadiobutton').grid(row=10, column=0, sticky='w')
-
-# Botón de guardar configuraciones que también muestra los valores seleccionados
-ttk.Button(settings_frame, text="Guardar", command=lambda: messagebox.showinfo("Guardado", f"Configuraciones guardadas:\nArriba: {up_control_method.get()}\nAbajo: {down_control_method.get()}"), style='TButton').grid(row=11, column=0, pady=10)
 
 # Empaquetar el settings_frame al final (modificar a grid)
-settings_frame.grid(row=0, column=2, padx=5, pady=5, sticky="n")  # Cambia esto a grid
-
-
+show_quadrants()
 # Hacer los frames arrastrables
 make_draggable(camera_frame_tk)
 make_draggable(camera_frame)

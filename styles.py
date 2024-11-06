@@ -10,3 +10,8 @@ def apply_styles():
     style.map('TButton',
               background=[('active', '#003366')],  # Color azul oscuro cuando se hace hover
               foreground=[('active', 'white')])
+    # Estilos para Radiobutton
+    style.configure('TRadiobutton', font=('Helvetica', 11), background='#e6f2ff', foreground='#00509e', padding=5)
+    style.map('TRadiobutton',
+              background=[('selected', '#cce0ff')],  # Color de fondo cuando está seleccionado
+              foreground=[('selected', '#003366')])  # Color de texto cuando está seleccionado
