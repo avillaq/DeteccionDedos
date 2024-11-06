@@ -19,9 +19,7 @@ def run_virtual_steering(up_method, down_method, stop_event):
         cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
         if not cap.isOpened():
             print("Error: No se pudo abrir la cámara.")
-            return  # O lanza una excepción si prefieres
-        #cap.set(cv2.CAP_PROP_EXPOSURE, -2) 
-        #cap.set(cv2.CAP_PROP_FPS, 15)  # Prueba reducir la tasa de fotogramas
+            return 
         keyboard = KeyboardController()
 
         # Variables para el seguimiento de la posición del volante
@@ -85,7 +83,9 @@ def run_virtual_steering(up_method, down_method, stop_event):
                             image,
                             hand_landmarks,
                             mp_hands.HAND_CONNECTIONS,
-                            landmark_drawing_spec=mp_drawing.DrawingSpec(color=(0, 0, 255), thickness=2, circle_radius=2),
+                            landmark_drawing_spec=mp_drawing.DrawingSpec(color=(0, 0, 255), 
+                                                                         thickness=2, 
+                                                                         circle_radius=2),
                             connection_drawing_spec=mp_drawing.DrawingSpec(color=(255, 255, 255), thickness=2))
 
                     # Si ambas manos están detectadas, comparar sus posiciones en el eje Y
@@ -156,30 +156,24 @@ def run_virtual_steering(up_method, down_method, stop_event):
                         bottom = top + int(bbox.height * height)
                         cv2.rectangle(image, (left, top), (right, bottom), (0, 255, 0), 2)
 
-                        # Calcular la distancia de la cara
-                        current_distance = bbox.width * bbox.height  # Área de la caja de la cara como medida de cercanía
+                        # Calcular la distancia de la cara (Area de la caja de la cara como medida de cercanía)
+                        current_distance = bbox.width * bbox.height 
 
                         if last_distance is not None:
-                            if current_distance > last_distance * (1 + distance_threshold):  # Acercarse a la cámara
+                            if current_distance > last_distance * (1 + distance_threshold): # Acercarse a la cámara
                                 if up_method == "Cabeza":
                                     keyboard.press(Key.up)
                                     keyboard.release(Key.down)
                                     last_action = "Acercando"
                                     action_text = "Acercando (Presionando tecla arriba)"
-                                elif up_method == "Mano":
-                                    # Lógica para las manos, si se desea, puede incluirse aquí
-                                    pass  # Reemplaza con la lógica deseada
 
-                            elif current_distance < last_distance * (1 - distance_threshold):  # Alejarse de la cámara
+                            elif current_distance < last_distance * (1 - distance_threshold): # Alejarse de la cámara
                                 if down_method == "Cabeza":
                                     keyboard.press(Key.down)
                                     keyboard.release(Key.up)
                                     last_action = "Alejando"
                                     action_text = "Alejando (Presionando tecla abajo)"
-                                elif down_method == "Mano":
-                                    # Lógica para las manos, si se desea, puede incluirse aquí
-                                    pass  # Reemplaza con la lógica deseada
-
+                                    
                             else:
                                 keyboard.release(Key.up)
                                 keyboard.release(Key.down)
@@ -189,17 +183,20 @@ def run_virtual_steering(up_method, down_method, stop_event):
                 # Detección de manos
                 if hand2_results.multi_hand_landmarks:
                     for hand_landmarks in hand2_results.multi_hand_landmarks:
-                        # Calcular la posición de la mano (puedes ajustar estos valores)
+                        # Calcular la posición de la mano
                         finger_positions = [(lm.x, lm.y) for lm in hand_landmarks.landmark]
-                        
+
+                        index_finger_tip = finger_positions[mp_hands.HandLandmark.INDEX_FINGER_TIP.value]
+                        wrist = finger_positions[mp_hands.HandLandmark.WRIST.value]
+
                         # Suponemos que el gesto de puño es cuando el dedo índice está completamente abajo
-                        if finger_positions[mp_hands.HandLandmark.INDEX_FINGER_TIP.value][1] > finger_positions[mp_hands.HandLandmark.WRIST.value][1]:  # Puño
+                        if index_finger_tip[1] > wrist[1]:  # Puño
                             if up_method == "Mano":  # Solo si se seleccionó control con la mano
                                 keyboard.press(Key.up)  # Acelerar
                                 keyboard.release(Key.down)
                                 last_action = "Acelerando"
                                 action_text = "Acelerando (Presionando tecla arriba)"
-                        elif finger_positions[mp_hands.HandLandmark.INDEX_FINGER_TIP.value][1] < finger_positions[mp_hands.HandLandmark.WRIST.value][1]:  # Mano extendida
+                        elif index_finger_tip[1] < wrist[1]:  # Mano extendida
                             if down_method == "Mano":  # Solo si se seleccionó control con la mano
                                 keyboard.press(Key.down)  # Desacelerar
                                 keyboard.release(Key.up)
@@ -219,13 +216,13 @@ def run_virtual_steering(up_method, down_method, stop_event):
                 # Mostrar imagen
                 cv2.imshow("Volante Virtual", image)
 
-                if cv2.getWindowProperty("Volante Virtual", cv2.WND_PROP_VISIBLE) < 1:  # Ventana cerrada
+                # Ventana cerrada
+                if cv2.getWindowProperty("Volante Virtual", cv2.WND_PROP_VISIBLE) < 1:  
                     
                     print("cerraste la ventana")
                     close_camera()
                     break  # Sale del bucle de inmediato
                     
-
                 if cv2.waitKey(10) & 0xFF == 27:  # ESC presionado
                     close_camera()
                     print("cerraste con ESC")

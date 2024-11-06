@@ -154,14 +154,17 @@ def video_stream(window, stop_event, up_method, down_method):
             if hand_results.multi_hand_landmarks:
                 for hand_landmarks in hand_results.multi_hand_landmarks:
                     finger_positions = [(lm.x, lm.y) for lm in hand_landmarks.landmark]
+
+                    index_finger_tip = finger_positions[mp_hands.HandLandmark.INDEX_FINGER_TIP.value]
+                    wrist = finger_positions[mp_hands.HandLandmark.WRIST.value]
                     
-                    if finger_positions[mp_hands.HandLandmark.INDEX_FINGER_TIP.value][1] > finger_positions[mp_hands.HandLandmark.WRIST.value][1]:
+                    if index_finger_tip[1] > wrist[1]:
                         if up_method == "Mano":
                             keyboard.press(Key.up)
                             keyboard.release(Key.down)
                             last_action = "Acelerando"
                             action_text = "Acelerando (Presionando tecla arriba)"
-                    elif finger_positions[mp_hands.HandLandmark.INDEX_FINGER_TIP.value][1] < finger_positions[mp_hands.HandLandmark.WRIST.value][1]:
+                    elif index_finger_tip[1] < wrist[1]:
                         if down_method == "Mano":
                             keyboard.press(Key.down)
                             keyboard.release(Key.up)
