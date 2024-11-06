@@ -181,7 +181,7 @@ ttk.Label(settings_frame, text="Opciones de Configuración",
 # Ajuste de sensibilidad
 ttk.Label(settings_frame, text="Ajuste de Sensibilidad:", 
           style='TLabel').grid(row=1, column=0, columnspan=2, pady=5)
-sensitivity_value = tk.DoubleVar(value=0.5)  # Valor por defecto 0.5
+sensitivity_value = tk.DoubleVar(value=0.1)  # Valor por defecto 0.1
 sensitivity_scale = ttk.Scale(settings_frame, from_=0, to=1, orient="horizontal", style='TScale', command=update_sensitivity_label, variable=sensitivity_value)
 sensitivity_scale.grid(row=2, column=0, columnspan=2, pady=5)
 sensitivity_label = ttk.Label(settings_frame, text=f"Sensibilidad: {sensitivity_value.get():.2f}", style='TLabel')
