@@ -6,7 +6,7 @@ import threading
 
 stop_event = threading.Event()
 
-def run_virtual_steering(up_method, down_method, stop_event):
+def run_virtual_steering(up_method, down_method, stop_event, steering_sensitivity, distance_threshold):
     
     try:
         # Inicializar el módulo de manos de Mediapipe
@@ -22,11 +22,6 @@ def run_virtual_steering(up_method, down_method, stop_event):
             return 
         keyboard = KeyboardController()
 
-        # Variables para el seguimiento de la posición del volante
-        steering_sensitivity = 0.5
-        previous_angle = 0
-        angle_threshold = 0.05
-
         # Variables para controlar la presión de las teclas
         is_pressed = False
         press_start_time = 0
@@ -35,7 +30,6 @@ def run_virtual_steering(up_method, down_method, stop_event):
 
         # Variables para el control de movimiento basado en distancia de la cara
         last_distance = None
-        distance_threshold = 5
 
         with mp_hands.Hands(
             model_complexity=0,
@@ -94,7 +88,7 @@ def run_virtual_steering(up_method, down_method, stop_event):
                         left_y = hand_positions["Izquierda"][1]
 
                         # Control del movimiento basado en la posición Y
-                        tolerancia = 0.2
+                        tolerancia = steering_sensitivity
                         
                         if right_y < left_y - tolerancia:  # Mano derecha mas arriba que la izquierda
                             if is_pressed and last_action != "Derecha":

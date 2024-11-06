@@ -25,6 +25,13 @@ def get_control_methods():
     print("Método de control seleccionado para abajo:", down_method)
     return up_method, down_method
 
+def get_sensitivity_and_distance():
+    steering_sensitivity = sensitivity_value.get()
+    distance_threshold = distance_value.get()
+    print("Sensibilidad seleccionada:", steering_sensitivity)
+    print("Umbral de distancia seleccionado:", distance_threshold)
+    return steering_sensitivity, distance_threshold
+
 def open_unity_game():
     # Comprobamos si es un juego local o en web y lo ejecutamos
     try:
@@ -69,9 +76,10 @@ def start_camera_thread():
 
     try:
         up_method, down_method = get_control_methods()
-        
+        steering_sensitivity, distance_threshold = get_sensitivity_and_distance()
+
         stop_event = threading.Event()
-        camera_thread = threading.Thread(target=run_virtual_steering, args=(up_method, down_method, stop_event))
+        camera_thread = threading.Thread(target=run_virtual_steering, args=(up_method, down_method, stop_event, steering_sensitivity, distance_threshold))
         camera_thread.start()
         print("Hilo de cámara iniciado.")
     except Exception as e:
@@ -101,6 +109,17 @@ def stop_camera_tk_thread():
     stop_event.set() 
     print("Hilo de cámara tk detenido.")
 
+# Función para actualizar la etiqueta de sensibilidad
+def update_sensitivity_label(value):
+    value = float(value)
+    sensitivity_value.set(value)
+    sensitivity_label.config(text=f"Sensibilidad: {value:.2f}")
+
+# Función para actualizar la etiqueta de distancia
+def update_distance_label(value):
+    value = float(value)
+    distance_value.set(value)
+    distance_label.config(text=f"Distancia: {value:.2f}")
 
 def on_closing():
     stop_camera_thread()  # Detener el hilo de la cámara
@@ -162,14 +181,20 @@ ttk.Label(settings_frame, text="Opciones de Configuración",
 # Ajuste de sensibilidad
 ttk.Label(settings_frame, text="Ajuste de Sensibilidad:", 
           style='TLabel').grid(row=1, column=0, columnspan=2, pady=5)
-sensitivity_scale = ttk.Scale(settings_frame, from_=0, to=1, orient="horizontal", style='TScale')
+sensitivity_value = tk.DoubleVar(value=0.5)  # Valor por defecto 0.5
+sensitivity_scale = ttk.Scale(settings_frame, from_=0, to=1, orient="horizontal", style='TScale', command=update_sensitivity_label, variable=sensitivity_value)
 sensitivity_scale.grid(row=2, column=0, columnspan=2, pady=5)
+sensitivity_label = ttk.Label(settings_frame, text=f"Sensibilidad: {sensitivity_value.get():.2f}", style='TLabel')
+sensitivity_label.grid(row=2, column=2, padx=5)
 
 # Umbral de distancia
 ttk.Label(settings_frame, text="Umbral de Distancia:", 
           style='TLabel').grid(row=3, column=0, columnspan=2, pady=5)
-distance_scale = ttk.Scale(settings_frame, from_=0.1, to=1, orient="horizontal", style='TScale')
+distance_value = tk.DoubleVar(value=0.3)  # Valor por defecto 0.3
+distance_scale = ttk.Scale(settings_frame, from_=0.1, to=1, orient="horizontal", style='TScale', command=update_distance_label, variable=distance_value)
 distance_scale.grid(row=4, column=0, columnspan=2, pady=5)
+distance_label = ttk.Label(settings_frame, text=f"Distancia: {distance_value.get():.2f}", style='TLabel')
+distance_label.grid(row=4, column=2, padx=5)
 
 # Configuración de teclas direccionales
 ttk.Label(settings_frame, text="Teclas Direccionales:", 
@@ -194,7 +219,7 @@ ttk.Radiobutton(settings_frame, text="Con la cabeza",
 
 # Botón de guardar configuraciones que también muestra los valores seleccionados
 ttk.Button(settings_frame, text="Guardar", 
-           command=lambda: messagebox.showinfo("Guardado", f"Configuraciones guardadas:\nArriba: {up_control_method.get()}\nAbajo: {down_control_method.get()}"), 
+           command=lambda: messagebox.showinfo("Guardado", f"Configuraciones guardadas:\nArriba: {up_control_method.get()}\nAbajo: {down_control_method.get()}\nSensibilidad: {sensitivity_value.get():.2f}\nDistancia: {distance_value.get():.2f}"), 
            style='TButton').grid(row=12, column=0, columnspan=2, pady=10)
 
 def show_columns():
