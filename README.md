@@ -1,59 +1,56 @@
 # Real-Time Hand Gesture Recognition for 3D Object Manipulation
 
 ## Introduction
-This project presents a real-time hand gesture recognition system capable of manipulating 3D objects through intuitive hand gestures. The system leverages computer vision, machine learning, and 3D graphics techniques to provide a natural and immersive user experience.
+Este proyecto presenta un sistema de reconocimiento de gestos de mano en tiempo real capaz de controlar un juego en 3D a través de gestos intuitivos de la mano. El sistema aprovecha técnicas de visión por computadora, aprendizaje automático y gráficos 3D para proporcionar una experiencia de usuario natural e inmersiva.
 
-## Key Features
-- **Hand Landmark Detection:** The system uses the MediaPipe library to detect hands in a video feed and extract 21 landmark coordinates for each hand.
-- **Machine Learning-based Gesture Recognition:** A machine learning model is trained using the scikit-learn library to classify hand gestures based on the landmark coordinates.
-- **3D Object Manipulation:** The recognized hand gestures are translated into corresponding 3D object manipulations, such as rotation and zooming, using the Windows 3D Viewer application.
 
-## Technologies and Platforms
-The implementation of the system utilizes the following technologies and platforms:
-- OpenCV: For video processing and image manipulation.
-- MediaPipe: For hand detection and landmark extraction.
-- scikit-learn: For machine learning model training and classification.
-- Python: The primary programming language used for the implementation.
-- Windows 3D Viewer: For displaying and manipulating 3D objects.
+## Características Clave
+- **Detección de Puntos de Referencia de la Mano:** El sistema utiliza la biblioteca MediaPipe para detectar manos en una transmisión de video y extraer 21 puntos de referencia para cada mano.
+- **Control de Juegos en 3D:** Los gestos de la mano reconocidos se traducen en manipulaciones correspondientes en el juego 3D, como mover el personaje o interactuar con el entorno.
+
+## Tecnologías y Plataformas
+La implementación del sistema utiliza las siguientes tecnologías y plataformas:
+- OpenCV: Para el procesamiento de video y manipulación de imágenes.
+- MediaPipe: Para la detección de manos y extracción de puntos de referencia.
+- Python: El lenguaje de programación principal utilizado para la implementación.
+- Unity: Para el desarrollo y control del juego en 3D.
 
 ## Dataset
-The project uses a publicly available dataset from the GitHub repository KNN Alphabet. This dataset contains labeled hand landmark coordinates for each letter of the American Sign Language (ASL) alphabet, with a total of 24,000 data points.
+El proyecto utiliza un dataset disponible públicamente del repositorio de GitHub KNN Alphabet. Este dataset contiene coordenadas de puntos de referencia de la mano etiquetadas para cada letra del alfabeto de la lengua de señas americana (ASL), con un total de 24,000 puntos de datos.
 ![Sign Language Alphabet Charts](Extra/menu.png)
 ![Hand Landmarks](Extra/hand-landmarks.png) 
 ![Sign Language Alphabet Charts](Extra/Sign_alphabet_charts.jpg)
 
 ## Demo
-Here's a demo of the real-time hand gesture recognition system in action:
+Aquí tienes una demostración del sistema de reconocimiento de gestos de mano en tiempo real en acción:
 
 ![Sign Language Alphabet Charts](Extra/giro.png)
 ![Sign Language Alphabet Charts](Extra/manejo.png)
 
-## Implementation Details
-The implementation of the real-time hand gesture recognition system for 3D object manipulation involves the following key steps:
-1. Initializing the MediaPipe hands object for hand detection and landmark extraction.
-2. Loading the trained machine learning model for gesture recognition.
-3. Creating a normalizer object to standardize the landmark coordinates.
-4. Processing each frame of the video feed, detecting hands, and extracting landmark coordinates.
-5. Feeding the normalized landmarks into the trained model to predict the corresponding gesture.
-6. Performing the appropriate 3D object manipulation based on the predicted gesture.
-7. Visualizing the detected hand landmarks on the video frame.
-8. Displaying the processed frame and handling user input.
+## Detalles de Implementación
+La implementación del sistema de reconocimiento de gestos de mano en tiempo real para el control de juegos en 3D implica los siguientes pasos clave:
+1. Inicializar el objeto de manos de MediaPipe para la detección de manos y extracción de puntos de referencia.
+2. Cargar el modelo de aprendizaje automático entrenado para el reconocimiento de gestos.
+3. Crear un objeto normalizador para estandarizar las coordenadas de los puntos de referencia.
+4. Procesar cada fotograma de la transmisión de video, detectar manos y extraer las coordenadas de los puntos de referencia.
+5. Alimentar los puntos de referencia normalizados en el modelo entrenado para predecir el gesto correspondiente.
+6. Realizar la manipulación adecuada en el juego 3D basada en el gesto predicho.
+7. Visualizar los puntos de referencia de la mano detectados en el fotograma de video.
+8. Mostrar el fotograma procesado y manejar la entrada del usuario.
 
-## Performance Evaluation
-The system was evaluated based on the following metrics:
-- **Gesture Recognition Accuracy:** The trained machine learning model achieved an accuracy of 95.2% in classifying the ASL alphabet gestures.
-- **Real-Time Responsiveness:** The system demonstrated robust real-time performance in recognizing hand gestures and translating them into 3D object manipulations.
-- **Usability:** The system provided an intuitive and natural interface for 3D object manipulation, enhancing the user experience.
+## Evaluación del Rendimiento
+El sistema se evaluó en base a los siguientes métricos:
+- **Respuesta en Tiempo Real:** El sistema demostró un rendimiento robusto en tiempo real al reconocer gestos de la mano y traducirlos en manipulaciones en el juego 3D.
+- **Usabilidad:** El sistema proporcionó una interfaz intuitiva y natural para el control del juego en 3D, mejorando la experiencia del usuario.
 
-## Challenges and Solutions
-The project faced challenges related to lighting conditions, hand orientation, and training dataset quality. Potential solutions include exploring advanced hand detection and tracking techniques, as well as expanding the training dataset and applying data augmentation.
+## Desafíos y Soluciones
+El proyecto enfrentó desafíos relacionados con las condiciones de iluminación y la orientación de la mano. Las soluciones potenciales incluyen explorar técnicas avanzadas de detección y seguimiento de manos.
 
-## Future Enhancements
-Potential future enhancements for this project include:
-- Incorporating more robust hand detection and tracking algorithms to handle varying lighting conditions and hand orientations.
-- Expanding the training dataset and exploring advanced deep learning architectures for gesture recognition.
-- Integrating support for a wider range of 3D object manipulation techniques, such as scaling and translation.
-- Exploring the integration with virtual and augmented reality environments for a more immersive user experience.
+## Mejoras Futuras
+Las posibles mejoras futuras para este proyecto incluyen:
+- Incorporar algoritmos más robustos de detección y seguimiento de manos para manejar condiciones de iluminación y orientaciones de manos variables.
+- Integrar soporte para una gama más amplia de técnicas de manipulación de objetos en 3D, como escalado y traslación.
+- Explorar la integración con entornos de realidad virtual y aumentada para una experiencia de usuario más inmersiva.
 
-## Conclusion
-The real-time hand gesture recognition system for 3D object manipulation presented in this project offers a compelling solution for intuitive and natural interaction with digital content. By leveraging computer vision, machine learning, and 3D graphics techniques, the system provides a seamless and engaging user experience, paving the way for innovative applications in various domains.
+## Conclusión
+El sistema de reconocimiento de gestos de mano en tiempo real para el control de juegos en 3D presentado en este proyecto ofrece una solución convincente para la interacción intuitiva y natural con contenido digital. Al aprovechar técnicas de visión por computadora, aprendizaje automático y gráficos 3D, el sistema proporciona una experiencia de usuario fluida y atractiva, allanando el camino para aplicaciones innovadoras en diversos dominios.
