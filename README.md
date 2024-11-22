@@ -19,8 +19,6 @@ La implementación del sistema utiliza las siguientes tecnologías y plataformas
 El proyecto utiliza un dataset disponible públicamente del repositorio de GitHub KNN Alphabet. Este dataset contiene coordenadas de puntos de referencia de la mano etiquetadas para cada letra del alfabeto de la lengua de señas americana (ASL), con un total de 24,000 puntos de datos.
 ![Sign Language Alphabet Charts](Extra/menu.png)
 
-![Sign Language Alphabet Charts](Extra/Sign_alphabet_charts.jpg)
-
 ## Demo
 Aquí tienes una demostración del sistema de reconocimiento de gestos de mano en tiempo real en acción:
 
@@ -105,6 +103,7 @@ Para ejecutar el proyecto, se requieren las bibliotecas listadas en `requirement
 ### 4. Ejecución del Proyecto
 
 #### Ejecutar el Menú Principal
+
 Para iniciar el menú principal, ejecuta `interface.py`:
 **Ejecutar el menú principal:**
     ```bash
