@@ -105,7 +105,7 @@ Para ejecutar el proyecto, se requieren las bibliotecas listadas en `requirement
 #### Ejecutar el Menú Principal
 
 Para iniciar el menú principal, ejecuta `interface.py`:
-**Ejecutar el menú principal:**
+1. **Ejecutar el menú principal:**
     ```bash
     python3 interface.py
     ```
