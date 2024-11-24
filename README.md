@@ -24,6 +24,7 @@ Aquí tienes una demostración del sistema de reconocimiento de gestos de mano e
 
 ![Sign Language Alphabet Charts](Extra/giro.png)
 ![Sign Language Alphabet Charts](Extra/manejo.png)
+![Sign Language Alphabet Charts](Extra/juego.jpeg)
 
 ## Detalles de Implementación
 La implementación del sistema de reconocimiento de gestos de mano en tiempo real para el control de juegos en 3D implica los siguientes pasos clave:
