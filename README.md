@@ -155,17 +155,18 @@ En este caso, instalaremos express como dependencia:
 ```bash
 npm install express
 ```
+
 4. **Ejecuta el servidor:**
 
 Para iniciar tu servidor, usa el siguiente comando:
 
 ```bash
 node index.js
-
+```
 
 5. **Verifica que el servidor esté funcionando:**
 
-Abre tu navegador web y visita la URL http://localhost:3000. Deberías ver el mensaje configurado en el archivo index.js.
+Abre tu navegador web y visita la URL http://localhost:3020. Deberías ver el mensaje configurado en el archivo index.js.
 
 ### 3. Estructura de Archivos
 
