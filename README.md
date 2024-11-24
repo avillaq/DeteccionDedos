@@ -38,7 +38,7 @@ La implementación del sistema de reconocimiento de gestos de mano en tiempo rea
 
 ### 2. Instalación de Dependencias
 
-#### Archivos Necesarios
+#### Archivos Necesarios para el cliente
 Para ejecutar el proyecto, se requieren las bibliotecas listadas en `requirement.txt`.
 
 #### Instalación para Distribuciones Basadas en Debian (Ubuntu, etc.)
@@ -93,6 +93,80 @@ Para ejecutar el proyecto, se requieren las bibliotecas listadas en `requirement
     ```bash
     pip install -r requirement.txt
     ```
+
+#### Archivos Necesarios para el servidor
+
+Cómo levantar un servidor con Node.js
+
+Este documento describe los pasos necesarios para levantar un servidor con Node.js utilizando el archivo `index.js`.
+
+Requisitos previos
+
+Antes de comenzar, asegúrate de tener instalado:
+
+- [Node.js](https://nodejs.org/) (versión 14 o superior recomendada)
+- [npm](https://www.npmjs.com/) (incluido con Node.js)
+
+Para verificar que tienes Node.js y npm instalados, ejecuta los siguientes comandos en tu terminal:
+
+```bash
+node -v
+npm -v
+```
+
+1. **Crea un archivo index.js**
+
+```bash
+const express = require('express');
+const http = require('http');
+const socketIo = require('socket.io');
+
+const app = express();
+const server = http.createServer(app);
+const io = socketIo(server);
+
+let players = {}; // Almacenamos los jugadores conectados
+let waitingForPlayers = []; // Lista de jugadores esperando
+let maxPlayers = 2; // Define el numero maximo de jugadores
+let playerCount = 0; // Contador de jugadores
+
+//resto del codigo
+
+// Iniciar el servidor en el puerto 3020
+server.listen(3020, '0.0.0.0', () => {
+    console.log('Servidor ejecutándose en http://0.0.0.0:3020');
+});
+```
+
+3. **Inicializa tu proyecto con npm:**
+
+En la carpeta donde se encuentra tu archivo index.js, ejecuta el siguiente comando para inicializar un proyecto de Node.js:
+
+```bash
+npm init -y
+```
+
+Esto creará un archivo package.json con la configuración predeterminada.
+
+3. **Instala las dependencias necesarias:**
+
+En este caso, instalaremos express como dependencia:
+
+```bash
+npm install express
+```
+4. **Ejecuta el servidor:**
+
+Para iniciar tu servidor, usa el siguiente comando:
+
+```bash
+node index.js
+
+
+5. **Verifica que el servidor esté funcionando:**
+
+Abre tu navegador web y visita la URL http://localhost:3000. Deberías ver el mensaje configurado en el archivo index.js.
+
 ### 3. Estructura de Archivos
 
 - `camara_openCV.py`, `camara_tk.py`, `handDetection.py`, `main.py`, `model.py`: Scripts Python para diversas funciones del proyecto.
