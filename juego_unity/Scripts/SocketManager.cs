@@ -11,7 +11,9 @@ public class SocketManager : MonoBehaviour
     public GameObject carPrefab_local_az;
     public GameObject carPrefab_local_ro;
     public GameObject carPrefab_local_am;
-    public GameObject carPrefab;
+    public GameObject carPrefab_az;
+    public GameObject carPrefab_ro;
+    public GameObject carPrefab_am;
     public InputField playerNameInput;
     private string playerName = "Player";
     private SocketIOClient.SocketIO socket;
@@ -74,7 +76,6 @@ public class SocketManager : MonoBehaviour
 
             socket.On("assignPlayerID", OnAssignPlayerID);
             socket.On("waitingForPlayers", WaitingForPlayers);
-            socket.On("startRace", StartRace);
             socket.On("initialize", OnInitializePlayers);
             socket.On("updatePlayers", OnUpdatePlayers);
 
@@ -94,29 +95,22 @@ public class SocketManager : MonoBehaviour
         Debug.Log("Esperando");
     }
 
-    // Cuando todos los jugadores están conectados, comenzamos la carrera
-    private void StartRace(SocketIOClient.SocketIOResponse response)
-    {
-        Debug.Log("La carrera ha comenzado!");
-        // Aquí se crea el prefab de cada jugador y se configura para iniciar la carrera.
-    }
-
     private void OnConnect(object sender, EventArgs e)
     {
         try
         {
             Debug.Log("Conectado al servidor exitosamente.");
-
+            /*
             // Asignar un nombre fijo para el jugador, si no se necesita input del jugador
             string playerName = "Player";  // O cualquier otro nombre fijo que prefieras
 
-            // Emite los eventos a través del socket
+            // Emite los eventos a traves del socket
             socket.EmitAsync("playerJoined", new { name = playerName });
-            socket.EmitAsync("initialize", new { });
+            socket.EmitAsync("initialize", new { });*/
         }
         catch (Exception ex)
         {
-            // Si ocurre algún error, se captura y se muestra en el log de errores
+            // Si ocurre algun error, se captura y se muestra en el log de errores
             Debug.LogError($"Error en OnConnect: {ex.Message}");
         }
     }
@@ -137,8 +131,15 @@ public class SocketManager : MonoBehaviour
         {
             string playerID = response.GetValue<string>(); // Esto directamente obtiene el valor de tipo string
             Debug.Log("Tu PlayerID es: " + playerID);
-            // Asignar el ID a una variable local para usarlo más adelante
+            // Asignar el ID a una variable local para usarlo mas adelante
             id_local = playerID;
+
+            // Emitir el color del auto al servidor
+            socket.EmitAsync("updateColor", new
+            {
+                playerID = id_local,  // Enviar el PlayerID
+                color_car = color_local // Enviar el color seleccionado
+            });
         }
         catch (Exception ex)
         {
@@ -146,7 +147,7 @@ public class SocketManager : MonoBehaviour
         }
     }
 
-     private void OnInitializePlayers(SocketIOClient.SocketIOResponse response)
+    private void OnInitializePlayers(SocketIOClient.SocketIOResponse response)
     {
         Debug.Log("Inicializando jugadores...");
 
@@ -165,6 +166,7 @@ public class SocketManager : MonoBehaviour
             Debug.Log("Ejecutando la acción en el hilo principal...");
             foreach (var player in playersData)
             {
+                Debug.Log($"Player Key: {player.Key}, Player Value: {player.Value}");
                 CreateOrUpdatePlayer(player.Key, player.Value,0);
             }
         });
@@ -196,7 +198,7 @@ public class SocketManager : MonoBehaviour
         Debug.Log($"playerId = {playerId} - id_local = {id_local}");
         if(estado == 1)
         {
-            // Si el jugador ya existe y es diferente del jugador local, actualizamos su posición y rotación
+            // Si el jugador ya existe y es diferente del jugador local, actualizamos su posicion y rotacion
             if (players.ContainsKey(playerId))
             {
                 if(playerId != id_local)
@@ -208,7 +210,7 @@ public class SocketManager : MonoBehaviour
                 }
             }
         }
-       if(estado == 0)  // estado para crear autosjuagadores
+       if(estado == 0)  // estado para crear autosjugadores
        {
 
             // Crear un nuevo GameObject independiente para el nuevo jugador
@@ -230,15 +232,31 @@ public class SocketManager : MonoBehaviour
                         Debug.Log($"Instanciando prefab local {id_local} en color amarillo");
                         break;
                     default:
-                        Debug.LogWarning($"Color desconocido: {color_local}");
+                        Debug.LogWarning($"Color local desconocido: {color_local}");
                         break;
                 }
                 
             }
             else
             {
-                newPlayer = Instantiate(carPrefab);
-                Debug.Log("Instanciando prefab estándar (carPrefab) para el nuevo jugador.");
+             switch (playerData.color_car)
+                {
+                    case "azul":
+                        newPlayer = Instantiate(carPrefab_az);
+                        Debug.Log($"Instanciando prefab otro jugador en color azul");
+                        break;
+                    case "rojo":
+                        newPlayer = Instantiate(carPrefab_ro);
+                        Debug.Log($"Instanciando prefab otro jugador en color rojo");
+                        break;
+                    case "amarillo":
+                        newPlayer = Instantiate(carPrefab_am);
+                        Debug.Log($"Instanciando prefab otro jugador en color amarillo");
+                        break;
+                    default:
+                        Debug.LogWarning($"Color desconocido: {playerData.color_car}");
+                        break;
+                }
             }
 
 
@@ -246,7 +264,7 @@ public class SocketManager : MonoBehaviour
             newPlayer.transform.position = new Vector3(initialPosition.x + post_count, initialPosition.y, initialPosition.z);
             players.Add(playerId, newPlayer);
             Debug.Log($"Nuevo jugador {playerId} post_count = {post_count} creado: Posición = {newPlayer.transform.position}, Rotación = {newPlayer.transform.rotation.eulerAngles}, Escala = {newPlayer.transform.localScale}");
-            // Asignar una cámara específica al nuevo jugador
+            // Asignar una camara especifica al nuevo jugador
             Camera playerCamera = newPlayer.GetComponentInChildren<Camera>();
             if (playerCamera != null)
             {
@@ -271,7 +289,7 @@ public class SocketManager : MonoBehaviour
 
     public void UpdatePosition(float x, float y, float z, float rotationX, float rotationY, float rotationZ)
     {
-        // Convertimos los datos a un objeto JSON o similar para enviar la posición y rotación
+        // Convertimos los datos a un objeto JSON o similar para enviar la posicion y rotacion
         var positionData = new
         {
             x = x,
@@ -314,10 +332,10 @@ public class SocketManager : MonoBehaviour
         public float scaleX { get; set; }
         public float scaleY { get; set; }
         public float scaleZ { get; set; }
-        public float speed { get; set; }
         public float rotationX { get; set; }  
         public float rotationY { get; set; }
         public float rotationZ { get; set; }
+        public string color_car { get; set; }
     }
 }
 

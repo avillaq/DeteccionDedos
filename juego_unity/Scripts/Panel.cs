@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class Panel : MonoBehaviour
 {
-    public GameObject mainMenuPanel;  // Panel del menú principal
+    public GameObject mainMenuPanel;  // Panel del menu principal
     public GameObject optionsPanel;  // Panel de opciones
     public GameObject carSelectionPanel; // Panel para seleccionar autos
     public InputField networkInputField; // Campo para ingresar la red
@@ -14,13 +14,13 @@ public class Panel : MonoBehaviour
 
     void Start()
     {
-        // Mostrar el menú principal al iniciar
+        // Mostrar el menu principal al iniciar
         ShowMainMenu();
     }
 
     public void play()
     {
-        // Asegúrate de que se haya ingresado una IP antes de intentar conectar
+        // Asegurate de que se haya ingresado una IP antes de intentar conectar
         networkIP = networkInputField.text;
 
         if (string.IsNullOrEmpty(networkIP))
@@ -73,7 +73,7 @@ public class Panel : MonoBehaviour
 
     public void SetCarColor(Button clickedButton)
     {
-        // Obtiene el texto del botón clicado y lo guarda en color_auto
+        // Obtiene el texto del boton clicado y lo guarda en color_auto
         color_auto = clickedButton.GetComponentInChildren<Text>().text;
         Debug.Log($"Color seleccionado: {color_auto}");
         ShowMainMenu();
@@ -82,6 +82,6 @@ public class Panel : MonoBehaviour
     public void ExitGame()
     {
         Debug.Log("Saliendo del juego...");
-        Application.Quit(); // Salir de la aplicación
+        Application.Quit(); // Salir de la aplicacion
     }
 }

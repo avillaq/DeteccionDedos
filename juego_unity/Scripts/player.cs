@@ -77,10 +77,10 @@ public class player : MonoBehaviour
             }
         }
 #else
-        // Caso 3: Móvil con acelerómetro
+        // Caso 3: Movil con acelerometro
         if (useAccelerometer)
         {
-            // Control con acelerómetro
+            // Control con acelerometro
             horizontalInput = Input.acceleration.x;
             // Ajusta verticalInput para hacer que 45 grados sea el punto neutral.
             float adjustedVertical = Input.acceleration.y - Mathf.Sin(Mathf.Deg2Rad * -45.0f);
@@ -88,14 +88,13 @@ public class player : MonoBehaviour
         }
         else if (useGestures)
         {
-            // Caso 4: PC/Móvil con gestos
-            // Aquí iría tu lógica de detección de gestos fuera del editor
+            // Caso 4: PC/Movil con gestos
             horizontalInput = Input.GetAxis("Mouse X");  // Ejemplo de gesto basado en mouse
             verticalInput = Input.GetAxis("Mouse Y");
         }
         else
         {
-            // Control con teclas (móvil/PC sin gestos ni acelerómetro)
+            // Control con teclas (movil/PC sin gestos ni acelerómetro)
             horizontalInput = Input.GetAxis("Horizontal");
             verticalInput = Input.GetAxis("Vertical");
         }
@@ -111,13 +110,13 @@ public class player : MonoBehaviour
 
         if (currentSpeed > 0.1f)
         {
-            // Reproducir el sonido de aceleración
+            // Reproducir el sonido de aceleracion
             if (!accelerationSound.isPlaying)
             {
                 accelerationSound.Play();
             }
 
-            // Detener el sonido de desaceleración si está reproduciéndose
+            // Detener el sonido de desaceleracion si esta reproduciendose
             if (decelerationSound.isPlaying)
             {
                 decelerationSound.Stop();
@@ -125,13 +124,13 @@ public class player : MonoBehaviour
         }
         else if (currentSpeed < -0.1f)
         {
-            // Reproducir el sonido de desaceleración
+            // Reproducir el sonido de desaceleracion
             if (!decelerationSound.isPlaying)
             {
                 decelerationSound.Play();
             }
 
-            // Detener el sonido de aceleración si está reproduciéndose
+            // Detener el sonido de aceleracion si esta reproduciendose
             if (accelerationSound.isPlaying)
             {
                 accelerationSound.Stop();
@@ -139,7 +138,7 @@ public class player : MonoBehaviour
         }
         else
         {
-            // Detener ambos sonidos si no hay aceleración ni desaceleración
+            // Detener ambos sonidos si no hay aceleracion ni desaceleracion
             accelerationSound.Stop();
             decelerationSound.Stop();
         }
