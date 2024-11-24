@@ -8,7 +8,7 @@ const io = socketIo(server);
 
 let players = {}; // Almacenamos los jugadores conectados
 let waitingForPlayers = []; // Lista de jugadores esperando
-let maxPlayers = 2; // Define el número máximo de jugadores
+let maxPlayers = 2; // Define el numero maximo de jugadores
 let playerCount = 0; // Contador de jugadores
 
 app.get('/', (req, res) => {
@@ -21,52 +21,58 @@ app.get('/getPlayers', (req, res) => {
     const playersWithID = Object.keys(players).map(playerID => {
         return {
             id: playerID,  // Usar socket.id como ID del jugador
-            ...players[playerID]  // Agregar los demás datos del jugador (nombre, posición, etc.)
+            ...players[playerID]  // Agregar los demas datos del jugador (nombre, posicion, etc.)
         };
     });
     res.json(playersWithID);  // Devolver los jugadores con su ID incluido
 });
 
-// Manejo de la conexión de un jugador
+// Manejo de la conexion de un jugador
 io.on('connection', (socket) => {
     console.log('Jugador conectado: ' + socket.id);
 
     const pID = `PlayerID${playerCount++}`;
     players[pID] = {
-        socketId: socket.id
+        socketId: socket.id,
+        color_car: "azul", 
     };
     
     // Emitir la lista de jugadores a todos los clientes
     console.log("Datos del jugador:", JSON.stringify(players));
-    // Enviar al jugador recién conectado su playerID
+    // Enviar al jugador recien conectado su playerID
     socket.emit('assignPlayerID', pID);
-    
+
+    socket.on('updateColor', (data) => {
+        const { playerID, color_car } = data;
+
+        if (players[playerID]) {
+            players[playerID].color_car = color_car;
+            console.log(`Color actualizado para ${playerID}: ${color_car}`);
+
+        } else {
+            console.log(`Jugador no encontrado: ${playerID}`);
+        }
+    });
+
     waitingForPlayers.push(pID);
 
-    // Enviar mensaje a todos los clientes diciendo que hay un nuevo jugador
-    io.emit('playerJoined', { players });
-
-    // Si todos los jugadores están conectados, inicia el juego
+    // Si todos los jugadores estan conectados, inicia el juego
     if (waitingForPlayers.length === maxPlayers) {
         console.log('Todos los jugadores están conectados. Iniciando la carrera...');
-        io.emit('startRace', { message: '¡La carrera ha comenzado!' });
 
         // Enviar a todos los jugadores los datos para sincronizar la carrera
-        //io.emit('initializePlayers', { players });
         io.emit('initialize', { players });
 
         // Limpiar la lista de jugadores esperando
         waitingForPlayers = [];
     } else {
-        // Si no todos los jugadores están conectados, mandar un mensaje de espera
+        // Si no todos los jugadores estan conectados, mandar un mensaje de espera
         socket.emit('waitingForPlayers', {
             message: `Esperando a otros jugadores... Quedan ${maxPlayers - waitingForPlayers.length} jugadores.`,
         });
     }
 
-    
-
-    // Recibir la actualización de la posición de un jugador
+    // Recibir la actualizacion de la posicion de un jugador
     socket.on('updatePosition', (data) => {
         console.log("Datos recibidos en updatePosition:", JSON.stringify(data));
         let playerID = null;
@@ -77,17 +83,17 @@ io.on('connection', (socket) => {
             if (players[id].socketId === t_socket) {
                 console.log("id dentro del bucle",id);
                 playerID = id;
-                // Actualizamos la posición en los ejes X, Y y Z
+                // Actualizamos la posicion en los ejes X, Y y Z
                 if (data.x !== undefined) players[playerID].x = data.x;
                 if (data.y !== undefined) players[playerID].y = data.y;
                 if (data.z !== undefined) players[playerID].z = data.z;
         
-                // Actualizamos la rotación en los ejes X, Y y Z
+                // Actualizamos la rotacion en los ejes X, Y y Z
                 if (data.rotationX !== undefined) players[playerID].rotationX = data.rotationX;
                 if (data.rotationY !== undefined) players[playerID].rotationY = data.rotationY;
                 if (data.rotationZ !== undefined) players[playerID].rotationZ = data.rotationZ;
         
-                // Mostrar la posición y rotación en la consola para depuración
+                // Mostrar la posicion y rotacion en la consola para depuracion
                 console.log(`Posición de ${playerID}: x = ${players[playerID].x}, y = ${players[playerID].y}, z = ${players[playerID].z}`);
                 console.log(`Rotación de ${playerID}: rotationX = ${players[playerID].rotationX}, rotationY = ${players[playerID].rotationY}, rotationZ = ${players[playerID].rotationZ}`);
         
@@ -97,7 +103,7 @@ io.on('connection', (socket) => {
         }
     });
 
-    // Manejar desconexión de un jugador
+    // Manejar desconexion de un jugador
     socket.on('disconnect', (reason) => {
         console.log(`Jugador desconectado: ${socket.id}, Motivo: ${reason}`);
         delete players[pID];
