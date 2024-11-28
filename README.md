@@ -37,6 +37,9 @@ La implementación del sistema de reconocimiento de gestos de mano en tiempo rea
 7. Visualizar los puntos de referencia de la mano detectados en el fotograma de video.
 8. Mostrar el fotograma procesado y manejar la entrada del usuario.
 
+![Sign Language Alphabet Charts](Extra/video_2_jugadores.gif)
+![Sign Language Alphabet Charts](Extra/video_3_jugadores.gif)   
+
 ### 2. Instalación de Dependencias
 
 #### Archivos Necesarios para el cliente
